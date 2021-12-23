@@ -1,0 +1,630 @@
+swagger: "2.0"
+info:
+  description: "This is a sample doc for FFL App.  You can find out more about     Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).      For this sample, you can use the api key `special-key` to test the authorization     filters."
+  version: "1.7.3"
+  title: "FFL API Docs"
+host: "localhost:8800"
+basePath: "/api"
+tags:
+- name: "posts"
+  description: "About posts"
+- name: "comments"
+  description: "Spice things up with comments"
+- name: "conversations"
+  description: "Conversation between users"
+- name: "messages"
+  description: "Messages in conversation"
+- name: "notifications"
+  description: "Notify the user !"
+schemes:
+- "http"
+- "https"
+paths:
+  /posts:
+    post:
+      tags:
+      - "posts"
+      summary: "Create a new post."
+      description: ""
+      operationId: "createPost"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Post object that needs to be added to the website"
+        required: true
+        schema:
+          $ref: "#/definitions/Post"
+      responses:
+        "201":
+          description: "The created object will be returned"
+        "409":
+          description: "Something went wrong"
+  /posts/feeds/page/{pageNo}/size/{pageSize}:
+    get:
+      tags:
+      - "posts"
+      summary: "Get the timeline post using page"
+      operationId: "getActivePostsByPage"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "pageNo"
+        in: "path"
+        type: "integer"
+        description: "Specified Page Number"
+        required: true
+      - name: "pageSize"
+        in: "path"
+        type: "integer"
+        description: "Specified Page Size"
+        required: true
+      responses:
+        "200":
+          description: "Active posts will be returned by page"
+        "404":
+          description: "Not Found"
+  /posts/{postId}:
+    get:
+      tags:
+      - "posts"
+      summary: "Get a specified post"
+      operationId: "getPostById"
+      consumes:
+      - "application/json"
+      produces:
+      - "appllication/json"
+      parameters:
+      - name: "postId"
+        in: "path"
+        type: "string"
+        description: "ID of the post to view"
+        required: true
+      responses:
+        "200":
+          description: "The updated object will be returned"
+        "404":
+          description: "Post not found"
+    put:
+      tags:
+      - "posts"
+      summary: "Update an existing post"
+      description: ""
+      operationId: "updatePost"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "postId"
+        in: "path"
+        type: "string"
+        description: "ID of post to edit"
+        required: true
+      - in: "body"
+        name: "body"
+        description: "Review(Post) object that needs to be updated"
+        required: true
+        schema:
+          $ref: "#/definitions/Post"
+      responses:
+        "200":
+          description: "The updated object will be returned"
+        "404":
+          description: "Post not found"
+    delete:
+      tags:
+      - "posts"
+      summary: "Delete a specified posts"
+      operationId: "softDeletePost"
+      consumes:
+      - "application/json"
+      produces:
+      - "appllication/json"
+      parameters:
+      - name: "postId"
+        in: "path"
+        type: "string"
+        description: "ID of the post to delete"
+        required: true
+      responses:
+        "200":
+          description: "The updated object will be returned"
+        "404":
+          description: "Post not found"
+  /posts/{postId}/like:
+    put:
+      tags:
+      - "posts"
+      summary: "Give a like to the post"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "postId"
+        in: "path"
+        type: "string"
+        description: "ID of post to give a like"
+        required: true
+      responses:
+        "200":
+          description: "The likeTable will be returned"
+        "404":
+          description: "Post not found"
+  /posts/profile/{username}:
+    get:
+      tags:
+      - "posts"
+      summary: "Find all posts by user"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        type: "string"
+        description: "Username to search"
+        required: true
+      responses:
+        "200":
+          description: "All of that user's posts will be returned"
+        "404":
+          description: "Not found"
+          
+  /posts/profile/{username}/page/{pageNo}/size/{pageSize}:
+    get:
+      tags:
+      - "posts"
+      summary: "Find all pagniated posts by user"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "username"
+        in: "path"
+        type: "string"
+        description: "Username to search"
+        required: true
+      - name: "pageNo"
+        in: "path"
+        type: "integer"
+        description: "Specified Page Number"
+        required: true
+      - name: "pageSize"
+        in: "path"
+        type: "integer"
+        description: "Specified Page Size"
+        required: true
+      responses:
+        "200":
+          description: "All of that user's posts will be returned"
+        "404":
+          description: "Not found"
+  /comments:
+    post:
+      tags:
+      - "comments"
+      summary: "Create a new comment"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        description: "Comment information to create"
+        required: true
+        schema:
+          $ref: "#/definitions/Comment"
+      responses:
+        "201":
+          description: "Created comment will be returned"
+        "409":
+          description: "Something went wrong"
+  /comments/post/{postId}/:
+    get:
+      tags:
+      - "comments"
+      summary: "Get all comments by post"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "postId"
+        in: "path"
+        type: "string"
+        description: "Specified Post ID"
+        required: true
+      responses:
+        "200":
+          description: "All active comments of the post will be returned"
+        "404":
+          description: "Not Found"
+  /comments/{commentId}:
+    get:
+      tags:
+      - "comments"
+      summary: "Get a specified comment"
+      operationId: "getCommentById"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "commentId"
+        in: "path"
+        type: "string"
+        description: "Specified Comment ID"
+        required: true
+      responses:
+        "200":
+          description: "Specified comment will be returned"
+        "404":
+          description: "Not Found"
+    put:
+      tags:
+      - "comments"
+      summary: "Update specified comment"
+      operationId: "editComment"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "commentId"
+        in: "path"
+        type: "string"
+        description: "Specified Comment ID"
+        required: true
+      - name: "body"
+        in: "body"
+        description: "Comment detail to update"
+        schema:
+          $ref: "#/definitions/Comment"
+      responses:
+        "200":
+          description: "Specified comment will be returned"
+        "404":
+          description: "Not Found"
+    delete:
+      tags:
+      - "comments"
+      summary: "Soft delete a comment"
+      operationId: "softDeleteComment"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "commentId"
+        in: "path"
+        type: "string"
+        description: "Specified Comment ID"
+        required: true
+      responses:
+        "200":
+          description: "Deleted comment will be returned"
+        "404":
+          description: "Not Found"
+  /conversations:
+    post:
+      tags:
+      - "conversations"
+      summary: "Create new conversation"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        description: "Conversation information to create"
+        required: true
+        schema:
+          $ref: "#/definitions/Conversation"
+      responses:
+        "201":
+          description: "Created comment will be returned"
+        "409":
+          description: "Something went wrong"
+  /conversations/{userId}:
+    get:
+      tags:
+      - "conversations"
+      summary: "Get all user's conversations"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        type: "string"
+        required: true
+      responses:
+        "200":
+          description: "All conversations of that user will be returned"
+        "404":
+          description: "Not Found"
+  /conversations/find/{firstUserId}/{secondUserId}:
+    get:
+      tags:
+      - "conversations"
+      summary: "Get the conversation between 2 users"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "firstUserId"
+        in: "path"
+        type: "string"
+        required: true
+      - name: "secondUserId"
+        in: "path"
+        type: "string"
+        required: true
+      responses:
+        "200":
+          description: "Specified conversation will be returned"
+        "404":
+          description: "Not Found"  
+  
+  /messages:
+    post:
+      tags:
+      - "messages"
+      summary: "Create new message"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        description: "Message information to create"
+        required: true
+        schema:
+          $ref: "#/definitions/Message"
+      responses:
+        "201":
+          description: "Created message will be returned"
+        "409":
+          description: "Something went wrong"
+          
+  /message/{conversationId}:
+    get:
+      tags:
+      - "messages"
+      summary: "Get messages from conversation"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "conversationId"
+        in: "path"
+        type: "string"
+        required: true
+      responses:
+        "200":
+          description: "Messages from that conversation will be returned"
+        "404":
+          description: "Not Found"
+          
+  /notifications:
+    post:
+      tags:
+      - "notifications"
+      summary: "Create new notification"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        description: "Notification information to create"
+        required: true
+        schema:
+          $ref: "#/definitions/Notification"
+      responses:
+        "201":
+          description: "Created message will be returned"
+        "409":
+          description: "Something went wrong"
+          
+  /notifications/{userId}:
+    get:
+      tags:
+      - "notifications"
+      summary: "Fetch all notification for user"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        type: "string"
+        required: true
+      responses:
+        "200":
+          description: "Notifications for that user will be returned"
+        "404":
+          description: "Not Found"
+          
+  /notifications/{userId}/seen:
+    put:
+      tags:
+      - "notifications"
+      summary: "Set all notification to 'seen' "
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        type: "string"
+        required: true
+      responses:
+        "200":
+          description: "Notifications for that user will be returned"
+        "404":
+          description: "Not Found"
+  /users:
+    get:
+      tags:
+      - "users"
+      summary: "Get user"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "All users will be returned"
+        "404":
+          description: "Not Found"
+  /users/{userId}:
+    put:
+      tags:
+      - "users"
+      summary: "Get specified user info"
+      operationId: "updateUser"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        type: "string"
+        required: true
+      - name: "body"
+        in: "body"
+        description: "Subject that you want to update"
+        required: true
+        schema:
+          $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: "Updated user's info will be returned"
+        "409":
+          description: "Conflict occurred"
+    delete:
+      tags:
+      - "users"
+      summary: "Delete specified user"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userId"
+        in: "path"
+        type: "string"
+        required: true
+      responses:
+        "200":
+          description: "Deleted user's info will be returned"
+        "409":
+          description: "Conflict occurred"
+definitions:
+  Comment:
+    type: "object"
+    properties:
+      desc:
+        type: "string"
+        description: "Comment Detail"
+      basePost:
+        type: "string"
+        description: "Mongoose ID of the base post"
+      commenter:
+        type: "string"
+        description: "Mongoose ID of the commenter (UserID)"
+  Conversation:
+    type: "object"
+    properties:
+      members:
+        type: "array"
+        items: { }
+        description: "Array of userId"
+  Message:
+    type: "object"
+    properties:
+      conversationId:
+        type: "string"
+        description: "ID of the conversation"
+      sender:
+        type: "string"
+        description: "ID of sender"
+      text:
+        type: "string"
+        description: "Text to send"
+  Notification:
+    type: "object"
+    properties:
+      postId:
+        type: "string"
+        description: "ID of the post"
+      notification_receiver:
+        type: "string"
+        description: "ID of the user who will receive the notification"
+      description:
+        type: "string"
+        description: "Texts which will be shown in notification"
+      notification_seen:
+        type: "boolean"
+        description: "Is this notification seen by user"
+  Post:
+    type: "object"
+    properties:
+      userId:
+        type: "string"
+        description: "ID of the poster"
+      desc:
+        type: "string"
+        description: "The detail of the post"
+      img:
+        type: "string"
+        description: "Image uploaded in post"
+      likes:
+        type: "string"
+        description: "Likes in post"
+      tag:
+        type: "string"
+        description: "Tag of a post"
+        enum:
+            - APPLIANCES
+            - CLOTHES
+            - FURNITURES
+            - MEDICAL
+            - OTHERS
+            - STUDY
+  User:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      profilePicture:
+        type: "string"
+      coverPicture:
+        type: "string"
+      isAdmin:
+        type: "boolean"
+        description: "Is this user admin?"
